@@ -2,11 +2,14 @@ package com.akash.todoapp.controller;
 
 import com.akash.todoapp.bean.Todo;
 import com.akash.todoapp.service.TodoHardCodedService;
+import com.sun.jndi.toolkit.url.Uri;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -40,5 +43,14 @@ public class TodoController {
     public ResponseEntity<Todo> updateTodo(@PathVariable String username, @PathVariable long id, @RequestBody Todo todo) {
         Todo todoUpdated = todoHardCodedService.save(todo);
         return new ResponseEntity<>(todo, HttpStatus.OK);
+    }
+
+    @PostMapping("/users/{username}/todos/{id}")
+    public ResponseEntity<Todo> createTodo(@PathVariable String username, @PathVariable long id, @RequestBody Todo todo) {
+        Todo createdTodo = todoHardCodedService.save(todo);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdTodo.getId()).toUri();
+
+        return ResponseEntity.created(uri).build();
     }
 }
